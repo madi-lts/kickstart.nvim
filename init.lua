@@ -644,6 +644,7 @@ require('lazy').setup({
           },
         },
         root_markers = { { 'Config.toml' }, '.git' },
+        filetypes = { 'rust' },
       })
       vim.lsp.enable 'rust-analyzer'
 
