@@ -616,6 +616,7 @@ require('lazy').setup({
         'rust-analyzer',
         'lua-language-server', -- Lua Language server
         'stylua', -- Used to format Lua code
+        'typescript-language-server',
         -- You can add other tools here that you want Mason to install
       })
 
@@ -674,6 +675,12 @@ require('lazy').setup({
         },
       })
       vim.lsp.enable 'lua-language-server'
+
+      vim.lsp.config('typescript-language-server', {
+        cmd = { 'typescript-language-server', '--stdio' },
+        filetypes = { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' },
+      })
+      vim.lsp.enable 'typescript-language-server'
     end,
   },
 
@@ -1007,7 +1014,24 @@ require('lazy').setup({
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     config = function()
-      local filetypes = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'rust', 'vim', 'vimdoc' }
+      local filetypes = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'javascript',
+        'jsx',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'rust',
+        'typescript',
+        'tsx',
+        'vim',
+        'vimdoc',
+      }
       require('nvim-treesitter').install(filetypes)
       vim.api.nvim_create_autocmd('FileType', {
         pattern = filetypes,
