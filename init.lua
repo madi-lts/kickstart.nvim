@@ -595,7 +595,7 @@ require('lazy').setup({
       local servers = {
         clangd = {},
         -- gopls = {},
-        pyright = {},
+        pyright = { venvPath = '/home/madi/uv/neovim' },
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
@@ -715,7 +715,8 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'isort', 'black' },
+        rust = { 'rustfmt', lsp_format = 'fallback' },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
@@ -1025,6 +1026,7 @@ require('lazy').setup({
         'luadoc',
         'markdown',
         'markdown_inline',
+        'python',
         'query',
         'rust',
         'typescript',
@@ -1123,22 +1125,39 @@ for _, ls in ipairs(language_servers) do
     -- you can add other fields for setting up lsp server in this table
   }
 end
-require('ufo').setup()
---
 
--- Option 3: treesitter as a main provider instead
--- (Note: the `nvim-treesitter` plugin is *not* needed.)
--- ufo uses the same query files for folding (queries/<lang>/folds.scm)
--- performance and stability are better than `foldmethod=nvim_treesitter#foldexpr()`
--- require('ufo').setup {
---   provider_selector = function(bufnr, filetype, buftype) return { 'treesitter', 'indent' } end,
--- }
---
+require('ufo').setup()
 
 -- End UFO configuration
-
+vim.g.python3_host_prog = vim.fn.expand '~/uv/neovim/bin/python'
 vim.keymap.set('n', '<leader>n', '<cmd>Neotree<CR>')
 vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle!<CR>')
+
+vim.keymap.set('n', '<localleader>mi', ':MoltenInit<CR>', { silent = true, desc = 'Initialize the plugin' })
+-- I find auto open annoying, keep in mind setting this option will require setting
+-- a keybind for `:noautocmd MoltenEnterOutput` to open the output again
+vim.g.molten_auto_open_output = false
+
+-- this guide will be using image.nvim
+-- Don't forget to setup and install the plugin if you want to view image outputs
+vim.g.molten_image_provider = 'image.nvim'
+
+-- optional, I like wrapping. works for virt text and the output window
+vim.g.molten_wrap_output = true
+
+-- Output as virtual text. Allows outputs to always be shown, works with images, but can
+-- be buggy with longer images
+vim.g.molten_virt_text_output = true
+
+-- this will make it so the output shows up below the \`\`\` cell delimiter
+vim.g.molten_virt_lines_off_by_1 = true
+
+vim.keymap.set('n', '<localleader>ji', ':MoltenImportOutput<CR>', { silent = true, desc = 'Import to Molten' })
+vim.keymap.set('n', '<localleader>e', ':MoltenEvaluateOperator<CR>', { silent = true, desc = 'Run operator selection' })
+vim.keymap.set('n', '<localleader>ra', ':MoltenReevaluateAll<CR>', { silent = true, desc = 'Evaluate all cells' })
+vim.keymap.set('n', '<localleader>rl', ':MoltenEvaluateLine<CR>', { silent = true, desc = 'Evaluate line' })
+vim.keymap.set('n', '<localleader>rr', ':MoltenReevaluateCell<CR>', { silent = true, desc = 'Evaluate cell' })
+vim.keymap.set('v', '<localleader>r', ':<C-u>MoltenEvaluateVisual<CR>gv', { silent = true, desc = 'Evaluate visual selection' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
